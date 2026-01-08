@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Impostor Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("background.jpg") no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: scroll;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 16px;
+      border-radius: 12px;
+      max-width: 400px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>Join Room</h2>
+
+    <input id="name" placeholder="Your Name"><br><br>
+    <input id="room" placeholder="Room Code"><br><br>
+
+    <button onclick="join()">Join</button>
+    <button onclick="start()">Start Game (Host)</button>
+
+    <pre id="output"></pre>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+
+    function join() {
+      socket.emit("joinRoom", {
+        roomId: room.value,
+        name: name.value
+      });
+    }
+
+    function start() {
+      socket.emit("startGame", room.value);
+    }
+
+    socket.on("role", data => {
+      output.innerText =
+        data.role === "Impostor"
+        ? "YOU ARE THE IMPOSTOR"
+        : `Category: ${data.category}\nWord: ${data.word}`;
+    });
+  </script>
+
+</body>
+</html>
